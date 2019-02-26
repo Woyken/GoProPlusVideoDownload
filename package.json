@@ -4,12 +4,19 @@
   "description": "",
   "main": "test-goproapi.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./dist/goProDownload.js",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@ronomon/utimes": "^2.3.1",
-    "axios": "^0.18.0"
+    "@types/node": "^11.9.5",
+    "@types/sanitize-filename": "^1.1.28",
+    "axios": "^0.18.0",
+    "sanitize-filename": "^1.6.1",
+    "tslint": "^5.13.0",
+    "typescript": "^3.3.3333"
   }
 }

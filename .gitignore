@@ -62,3 +62,5 @@ typings/
 
 # downloaded files
 downloaded/
+
+dist/
