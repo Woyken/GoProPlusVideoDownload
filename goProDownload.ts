@@ -35,11 +35,14 @@ async function getDownloadUrl(goproItemId: string, authToken: string): Promise<G
             headers: {
                 Authorization: authToken,
             },
+        }).catch((reason) => {
+            if (response.status === 401) {
+                // tslint:disable-next-line:no-console
+                reject("Unauthorized exception. Your authorization token has expired. You need to update the token to continue.");
+            }
+            throw reason;
         });
-        if (response.status === 401) {
-            // tslint:disable-next-line:no-console
-            reject("Unauthorized exception. Your authorization token has expired. You need to update the token to continue.");
-        }
+
         const responseJson = response.data as GoProItemDownloadResponseData;
         const variations = responseJson._embedded.variations;
         variations.forEach((downloadElement) => {
@@ -87,6 +90,12 @@ async function getItemList(authToken: string, pageSize: number, pageNum: number 
         media.forEach((mediaItem) => {
             if (skipFirstFoundItems > 0) {
                 skipFirstFoundItems = skipFirstFoundItems - 1;
+                return;
+            }
+
+            if (mediaItem.ready_to_view !== "ready") {
+                // tslint:disable-next-line: no-console
+                console.log(`Skipped 1 invisible element, it's ${mediaItem.ready_to_view}. List might be offset a little!`);
                 return;
             }
             mediaList.push(new GoProItemListItem(mediaItem.id, mediaItem.captured_at, mediaItem.token));
@@ -145,7 +154,7 @@ async function start(pageSize: number, pageNum: number, ignoreFirstFoundCount: n
             // tslint:disable-next-line:no-console
             await console.log(`Progress: ${index + 1}/${itemList.length}`);
             // Download one by one for now.
-            await getDownloadUrl(item.id, item.token).then(async (downloadMetadata) => {
+            await getDownloadUrl(item.id, authorizationToken).then(async (downloadMetadata) => {
                 const capturedAt = Date.parse(item.capturedAt);
                 downloadItem(downloadMetadata.url, prepareFilename(downloadMetadata.fileName, capturedAt, downloadMetadata.fileType), capturedAt);
             });

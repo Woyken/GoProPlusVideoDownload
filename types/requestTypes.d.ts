@@ -70,6 +70,7 @@ interface GoProItemItemListResponseDataEmbedded {
 
 type GoProItemItemListResponseDataEmbeddedMediaPlayAs = 'photo' | 'video';
 type GoProItemItemListResponseDataEmbeddedMediaType = 'Photo' | 'Video';
+type GoProItemItemListResponseDataEmbeddedMediaReadyToView = 'ready' | 'uploading';
 
 interface GoProItemItemListResponseDataEmbeddedMedia {
     captured_at: string;
@@ -83,7 +84,7 @@ interface GoProItemItemListResponseDataEmbeddedMedia {
     on_public_profile: boolean;
     play_as: GoProItemItemListResponseDataEmbeddedMediaPlayAs;
     ready_to_edit: boolean;
-    ready_to_view: string;
+    ready_to_view: GoProItemItemListResponseDataEmbeddedMediaReadyToView;
     source_duration: null;
     token: string;
     type: GoProItemItemListResponseDataEmbeddedMediaType;
