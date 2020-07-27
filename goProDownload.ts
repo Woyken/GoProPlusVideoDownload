@@ -1,4 +1,3 @@
-import utimes from "@ronomon/utimes";
 import axios from "axios";
 import fs from "fs";
 import readline from "readline";
@@ -105,30 +104,26 @@ async function getItemList(authToken: string, pageSize: number, pageNum: number 
     return promise;
 }
 
-function downloadItem(url: string, filename: string, capturedAt: number): Promise<void> {
-    const promise = new Promise<void>((resolve, reject) => {
-        // tslint:disable-next-line:no-console
-        console.log(`Downloading: ${filename}`);
-        axios({
-            method: "GET",
-            responseType: "stream",
-            url,
-        }).then((response) => {
-            response.data.pipe(fs.createWriteStream(`${downloadDirectory}${filename}`)).on("finish", () => {
-                // Add metadata: set CreatedDate to CapturedAt moment. Since Videos don't have well-defined metadata, like audio and photos do.
-                // With this data uploading to Google Photos works fine and video is placed at corrent time in timeline.
-                const capturedAtDate = capturedAt;
-                const mtime = capturedAt;
-                const atime = undefined;
-                // tslint:disable-next-line:no-empty
-                utimes.utimes(`${downloadDirectory}${filename}`, capturedAtDate, mtime, atime, () => { });
-                // tslint:disable-next-line:no-console
-                console.log(`Download of: ${filename} COMPLETED`);
-                resolve();
-            });
+async function downloadItem(url: string, filename: string, capturedAt: number): Promise<void> {
+    // tslint:disable-next-line:no-console
+    console.log(`Downloading: ${filename}`);
+    await axios({
+        method: "GET",
+        responseType: "stream",
+        url,
+    }).then((response) => {
+        response.data.pipe(fs.createWriteStream(`${downloadDirectory}${filename}`)).on("finish", () => {
+            // Add metadata: set CreatedDate to CapturedAt moment. Since Videos don't have well-defined metadata, like audio and photos do.
+            // With this data uploading to Google Photos works fine and video is placed at correct time in timeline.
+            // Without this, video ends up at the time video was downloaded.
+            const capturedAtTimes = capturedAt / 1000;
+            const mtimes = capturedAt / 1000;
+            console.log(`Download of: ${filename} COMPLETED`);
+            console.log(`Updating modified date for ${filename}`);
+            fs.utimesSync(`${downloadDirectory}${filename}`, capturedAtTimes, mtimes);
+            console.log(`Done updating modified date for ${filename}`);
         });
     });
-    return promise;
 }
 
 function prepareFilename(filename: string, capturedAt: number, fileType: string) {
@@ -149,14 +144,14 @@ async function start(pageSize: number, pageNum: number, ignoreFirstFoundCount: n
     if (!fs.existsSync(downloadDirectory)) {
         fs.mkdirSync(downloadDirectory);
     }
-    getItemList(authorizationToken, pageSize, pageNum, ignoreFirstFoundCount).then(async (itemList) => {
+    await getItemList(authorizationToken, pageSize, pageNum, ignoreFirstFoundCount).then(async (itemList) => {
         await asyncForEach(itemList, async (item, index) => {
             // tslint:disable-next-line:no-console
-            await console.log(`Progress: ${index + 1}/${itemList.length}`);
+            console.log(`Progress: ${index + 1}/${itemList.length}`);
             // Download one by one for now.
             await getDownloadUrl(item.id, authorizationToken).then(async (downloadMetadata) => {
                 const capturedAt = Date.parse(item.capturedAt);
-                downloadItem(downloadMetadata.url, prepareFilename(downloadMetadata.fileName, capturedAt, downloadMetadata.fileType), capturedAt);
+                await downloadItem(downloadMetadata.url, prepareFilename(downloadMetadata.fileName, capturedAt, downloadMetadata.fileType), capturedAt);
             });
         });
     });
@@ -190,7 +185,7 @@ rl.question("Page size to get: \n", (pageSizeStr) => {
                 rl.close();
                 return;
             }
-            start(pageSize, pageNum, ignoreFirstFoundCount);
+            start(pageSize, pageNum, ignoreFirstFoundCount).catch((a) => console.error(a));
             rl.close();
         });
     });
