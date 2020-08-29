@@ -7,6 +7,7 @@ interface GoProItemDownloadResponseDataEmbeded {
     files: GoProItemDownloadResponseDataFile[];
     variations: GoProItemDownloadResponseDataVariation[];
     sprites: GoProItemDownloadResponseDataSprite[];
+    sidecar_files: GoProItemDownloadResponseDataSidecarFile[];
 }
 
 interface GoProItemDownloadResponseDataFile {
@@ -19,7 +20,10 @@ interface GoProItemDownloadResponseDataFile {
     orientation: number;
 }
 
-type GoProItemDownloadResponseDataVariationLabel = 'source' | 'high_res_proxy_mp4' | 'mp4_low';
+type GoProItemDownloadResponseDataVariationLabel =
+    | 'source'
+    | 'high_res_proxy_mp4'
+    | 'mp4_low';
 type GoProItemDownloadResponseDataVariationType = 'mp4' | 'jpg';
 
 interface GoProItemDownloadResponseDataVariation {
@@ -30,6 +34,7 @@ interface GoProItemDownloadResponseDataVariation {
     label: GoProItemDownloadResponseDataVariationLabel;
     type: GoProItemDownloadResponseDataVariationType;
     quality: string;
+    transforms: null;
 }
 
 type GoProItemDownloadResponseDataSpriteType = 'jpg';
@@ -51,6 +56,17 @@ interface GoProItemDownloadResponseDataSprite {
     frame: GoProItemDownloadResponseDataSpriteFrame;
 }
 
+type GoProItemDownloadResponseDataSidecarFileLabel = 'gpmf';
+type GoProItemDownloadResponseDataSidecarFileType = 'mp4';
+
+interface GoProItemDownloadResponseDataSidecarFile {
+    url: string;
+    head: string;
+    label: GoProItemDownloadResponseDataSidecarFileLabel;
+    type: GoProItemDownloadResponseDataSidecarFileType;
+    fps: number;
+}
+
 interface GoProItemItemListResponseData {
     _pages: GoProItemItemListResponseDataPages;
     _embedded: GoProItemItemListResponseDataEmbedded;
@@ -70,7 +86,9 @@ interface GoProItemItemListResponseDataEmbedded {
 
 type GoProItemItemListResponseDataEmbeddedMediaPlayAs = 'photo' | 'video';
 type GoProItemItemListResponseDataEmbeddedMediaType = 'Photo' | 'Video';
-type GoProItemItemListResponseDataEmbeddedMediaReadyToView = 'ready' | 'uploading';
+type GoProItemItemListResponseDataEmbeddedMediaReadyToView =
+    | 'ready'
+    | 'uploading';
 
 interface GoProItemItemListResponseDataEmbeddedMedia {
     captured_at: string;
