@@ -153,7 +153,7 @@ const VideoList = observer(
                             });
                         }}
                     >
-                        test
+                        Download selected
                     </button>
                     {settingsStore.downloadLocation}
                     <button onClick={startSelectNewDownloadLocation}>
