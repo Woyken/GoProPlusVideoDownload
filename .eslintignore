@@ -50,6 +50,7 @@ __snapshots__
 
 # Package.json
 package.json
+.eslintrc.js
 .travis.yml
 *.css.d.ts
 *.sass.d.ts

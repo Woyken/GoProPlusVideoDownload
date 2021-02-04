@@ -25,8 +25,22 @@ module.exports = {
         // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
         // e.g. "@typescript-eslint/explicit-function-return-type": "off",
         '@typescript-eslint/no-empty-interface': 'off',
-        '@typescript-eslint/explicit-function-return-type': 'error',
+        '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/no-floating-promises': 'error',
         '@typescript-eslint/require-await': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
     },
+    overrides: [
+        {
+            files: ['*.ts', '*.tsx'],
+            rules: {
+                '@typescript-eslint/explicit-function-return-type': ['error'],
+                '@typescript-eslint/no-unsafe-assignment': ['error'],
+                '@typescript-eslint/no-unsafe-member-access': ['error'],
+                '@typescript-eslint/no-unsafe-call': ['error'],
+            },
+        },
+    ],
 };
