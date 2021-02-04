@@ -73,7 +73,12 @@ export async function getDownloadUrl(
         },
     }); //GoProItemDownloadResponseData
     const responseJson = (await response.json()) as GoProItemDownloadResponseData;
-    const responseFileName = responseJson.filename;
+    const responseFileName =
+        (responseJson.filename != ''
+            ? responseJson.filename
+            : new URL(responseJson._embedded.files[0].url).pathname
+                  .split('/')
+                  .pop()) ?? 'unknownFileName.mp4';
     const responseFileNameMatch = /(.+)\.(.+)/.exec(responseFileName);
     const responseFileNameNoExt =
         responseFileNameMatch?.[1] ?? responseFileName;
