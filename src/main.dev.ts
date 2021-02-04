@@ -19,6 +19,7 @@ import installer, {
 } from 'electron-devtools-installer';
 import electronDebug from 'electron-debug';
 import { install as sourceMapSupportInstall } from 'source-map-support';
+import './tokenRetrieval';
 
 export default class AppUpdater {
     constructor() {
@@ -40,7 +41,7 @@ if (
     process.env.NODE_ENV === 'development' ||
     process.env.DEBUG_PROD === 'true'
 ) {
-    electronDebug();
+    electronDebug({ isEnabled: false });
 }
 
 const installExtensions = async (): Promise<void> => {
