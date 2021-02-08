@@ -10,8 +10,8 @@
     "url": "https://github.com/Woyken"
   },
   "scripts": {
-    "electron-rebuild": "node -r ../internals/scripts/BabelRegister.js ../internals/scripts/ElectronRebuild.js",
-    "postinstall": "npm run electron-rebuild"
+    "electron-rebuild": "node -r ../.erb/scripts/BabelRegister.js ../.erb/scripts/ElectronRebuild.js",
+    "postinstall": "yarn electron-rebuild"
   },
   "license": "MIT",
   "devDependencies": {

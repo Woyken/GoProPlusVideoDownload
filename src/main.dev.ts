@@ -80,7 +80,7 @@ const createWindow = async (): Promise<void> => {
     });
 
     mainWindow
-        .loadURL(`file://${__dirname}/../src/app/app.html`)
+        .loadURL(`file://${__dirname}/../src/index.html`)
         .catch(console.log);
 
     // @TODO: Use 'ready-to-show' event

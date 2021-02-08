@@ -1,7 +1,6 @@
 {
   "name": "gopro-plus-downloader",
   "productName": "GoProPlusDownloader",
-  "version": "1.0.0",
   "description": "Application for downloading GoPro videos from GoPro Plus website plus.gopro.com",
   "scripts": {
     "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
@@ -36,11 +35,22 @@
     "files": [
       "dist/",
       "node_modules/",
-      "app.html",
+      "index.html",
       "main.prod.js",
       "main.prod.js.map",
       "package.json"
     ],
+    "afterSign": ".erb/scripts/Notarize.js",
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "type": "distribution",
+      "hardenedRuntime": true,
+      "entitlements": "assets/entitlements.mac.plist",
+      "entitlementsInherit": "assets/entitlements.mac.plist",
+      "gatekeeperAssess": false
+    },
     "dmg": {
       "contents": [
         {
@@ -57,27 +67,27 @@
     },
     "win": {
       "target": [
-        "nsis",
-        "msi"
+        "nsis"
       ]
     },
     "linux": {
       "target": [
-        "deb",
-        "rpm",
         "AppImage"
       ],
       "category": "Development"
     },
     "directories": {
-      "buildResources": "resources",
+      "app": "src",
+      "buildResources": "assets",
       "output": "release"
     },
+    "extraResources": [
+      "./assets/**"
+    ],
     "publish": {
       "provider": "github",
       "owner": "Woyken",
-      "repo": "GoProPlusVideoDownload",
-      "private": false
+      "repo": "GoProPlusVideoDownload"
     }
   },
   "repository": {
@@ -262,7 +272,7 @@
         "files": [
           ".prettierrc",
           ".babelrc",
-          ".stylelintrc"
+          ".eslintrc"
         ],
         "options": {
           "parser": "json"
