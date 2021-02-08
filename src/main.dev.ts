@@ -9,7 +9,7 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -34,6 +34,7 @@ app.userAgentFallback = 'Chrome';
 let mainWindow: BrowserWindow | null = null;
 
 if (process.env.NODE_ENV === 'production') {
+    console.log('Installing source map support');
     sourceMapSupportInstall();
 }
 
@@ -58,30 +59,36 @@ const createWindow = async (): Promise<void> => {
         process.env.NODE_ENV === 'development' ||
         process.env.DEBUG_PROD === 'true'
     ) {
+        console.log('installing extensions...');
         await installExtensions();
+        console.log('done installing extensions...');
     }
+
+    console.log('Creating window');
+
+    const RESOURCES_PATH = app.isPackaged
+        ? path.join(process.resourcesPath, 'assets')
+        : path.join(__dirname, '../assets');
+
+    const getAssetPath = (...paths: string[]): string => {
+        return path.join(RESOURCES_PATH, ...paths);
+    };
+    console.log('Resources path: ', RESOURCES_PATH);
 
     mainWindow = new BrowserWindow({
         show: false,
         width: 1024,
         height: 728,
-        webPreferences:
-            (process.env.NODE_ENV === 'development' ||
-                process.env.E2E_BUILD === 'true') &&
-            process.env.ERB_SECURE !== 'true'
-                ? {
-                      nodeIntegration: true,
-                      enableRemoteModule: true,
-                  }
-                : {
-                      preload: path.join(__dirname, 'dist/renderer.prod.js'),
-                      enableRemoteModule: true,
-                  },
+        icon: getAssetPath('icon.png'),
+        webPreferences: {
+            nodeIntegration: true,
+            enableRemoteModule: true,
+        },
     });
 
-    mainWindow
-        .loadURL(`file://${__dirname}/../src/index.html`)
-        .catch(console.log);
+    console.log(`loading url: file://${__dirname}/index.html`);
+    // Loading the url asynchronously, so we get a chance to subscribe to events below
+    mainWindow.loadURL(`file://${__dirname}/index.html`).catch(console.error);
 
     // @TODO: Use 'ready-to-show' event
     //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
@@ -104,12 +111,19 @@ const createWindow = async (): Promise<void> => {
     const menuBuilder = new MenuBuilder(mainWindow);
     menuBuilder.buildMenu();
 
+    // Open urls in the user's browser
+    mainWindow.webContents.on('new-window', (event, url) => {
+        event.preventDefault();
+        shell.openExternal(url).catch(console.warn);
+    });
+
     // Remove this if your app does not use auto updates
     // eslint-disable-next-line
     new AppUpdater();
 };
 
 app.on('ready', () => {
+    console.log('app ready');
     createWindow().catch(console.error);
 });
 
@@ -136,5 +150,5 @@ app.on('window-all-closed', () => {
 // app.on('activate', () => {
 //     // On macOS it's common to re-create a window in the app when the
 //     // dock icon is clicked and there are no other windows open.
-//     if (mainWindow === null) createWindow().catch(console.log);
+//     if (mainWindow === null) createWindow().catch(console.error);
 // });
