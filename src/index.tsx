@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { render } from 'react-dom';
 import './app/app.global.css';
 import Root from './app/containers/Root';

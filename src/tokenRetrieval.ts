@@ -2,7 +2,7 @@ import { ipcMain, BrowserWindow } from 'electron';
 
 let currentToken: string | undefined;
 
-ipcMain.on('token-request', (event, arg) => {
+ipcMain.on('token-request', (event) => {
     console.log('Main - received token request');
     (async (): Promise<void> => {
         let loginWindow: BrowserWindow | null = new BrowserWindow({
@@ -14,7 +14,7 @@ ipcMain.on('token-request', (event, arg) => {
             },
         });
 
-        loginWindow.webContents.on('will-navigate', (e, url) => {
+        loginWindow.webContents.on('will-navigate', (_e, url) => {
             // We get redirected to https://plus.gopro.com/media-library after authentication is complete
             if (!/^https:\/\/plus.gopro.com\/media-library/.exec(url)) return;
             (async (): Promise<void> => {
@@ -44,7 +44,7 @@ ipcMain.on('token-request', (event, arg) => {
             })().catch(console.log);
         });
 
-        loginWindow.webContents.on('will-redirect', (e, url) => {
+        loginWindow.webContents.on('will-redirect', (_e, url) => {
             if (!/^https:\/\/plus.gopro.com\/media-library/.exec(url)) return;
             (async (): Promise<void> => {
                 const token = (

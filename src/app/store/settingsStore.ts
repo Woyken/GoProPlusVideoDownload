@@ -31,19 +31,22 @@ class SettingsStore {
         makeAutoObservable(this);
         // Todo read saved location
         observe(this, 'downloadLocation', (c) => {
-            localStorage.setItem('downloadLocation', c.newValue);
+            localStorage.setItem('downloadLocation', c.newValue as string);
             videoItemStore.cleanupDownloadStatuses();
 
             this.downloadLocationWatcher?.close();
 
-            this.downloadLocationWatcher = chokidar.watch(c.newValue, {
-                depth: 0,
-            });
+            this.downloadLocationWatcher = chokidar.watch(
+                c.newValue as string,
+                {
+                    depth: 0,
+                },
+            );
             this.downloadLocationWatcher.on('unlink', (path) => {
                 const id = getIdFromFilePath(path);
                 videoItemStore.setDownloadedDeletedForId(id);
             });
-            this.downloadLocationWatcher.on('add', (path, stats) => {
+            this.downloadLocationWatcher.on('add', (path, _stats) => {
                 const id = getIdFromFilePath(path);
                 videoItemStore.setDownloadStatusForId(
                     id,
@@ -75,10 +78,6 @@ class SettingsStore {
     }
 }
 const settingsStore = new SettingsStore();
-
-function getFileName(name: string, id: string): string {
-    return `${name}-_-${id}`;
-}
 
 function getIdFromFilePath(path: string): string {
     const fileName = basename(path);

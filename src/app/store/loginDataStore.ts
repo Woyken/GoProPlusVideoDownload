@@ -11,7 +11,7 @@ class LoginDataStore {
     @observable authToken = '';
 }
 
-ipcRenderer.on('token-response', (event, token: string) => {
+ipcRenderer.on('token-response', (_event, token: string) => {
     loginDataStore.authToken = token;
     console.log('Received token to renderer', token); // prints "pong"
 });

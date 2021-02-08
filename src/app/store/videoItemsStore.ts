@@ -2,7 +2,6 @@ import {
     observable,
     computed,
     action,
-    IObservableArray,
     intercept,
     makeAutoObservable,
 } from 'mobx';
