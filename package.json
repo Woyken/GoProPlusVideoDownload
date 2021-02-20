@@ -65,9 +65,12 @@
         }
       ]
     },
+    "portable": {
+      "artifactName": "GoProPlusDownloader_Portable.exe"
+    },
     "win": {
       "target": [
-        "nsis"
+        "portable"
       ]
     },
     "linux": {
