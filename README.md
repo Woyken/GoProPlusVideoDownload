@@ -6,7 +6,13 @@ Here's quick and dirty electron app to bulk download videos from GoPro Plus clou
 
 ## To run
 
-For now only dev environment works. Here are the steps:
+### Download release build
+
+Download portable build from github releases <https://github.com/Woyken/GoProPlusVideoDownload/releases/latest>
+
+### Build yourself
+
+Here are the steps:
 
 Download and install [YARN 1.x](https://classic.yarnpkg.com/en/docs/install).
 
